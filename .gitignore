@@ -34,3 +34,8 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+=======
+*.egg-info
+
+# Virtualenv
+venv/
