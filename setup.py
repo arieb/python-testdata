@@ -14,9 +14,12 @@ setup(
     author = "Arie Bro",
     description = "A small package that helps generate content for MongoDB database.",
     license = "BSD",
-    install_requires=[
+    install_requires = [
         "pymongo >= 2.5.2"
     ],
+    package_data = {
+        '': ['.md']
+    },
     keywords = "mongodb factory testing test unittest mongo",
     packages=['mongofactory'],
     long_description=read('README.md'),

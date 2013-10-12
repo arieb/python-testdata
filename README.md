@@ -5,3 +5,33 @@ A simple package that generates data for tests.
 =======
 MongoFactory
 ============
+
+# Example
+```python
+class UserFactory(DocumentFactory):
+    firstname = StringFactory(min_chars=3, max_chars=10)
+    lastname = StringFactory(prefix="N", max_chars=10)
+    age = RandomSelection(xrange(1, 60))
+    email = StringFactory(suffix="@mail.com", max_char=10)
+
+    meta = dict(
+        collection_name = "users",
+    )
+
+TAGS = ["mongodb", "python", "mongo", "foo"]
+
+class PostFactory(DocumentFactory):
+    owner = FieldFromDocument("collection_name", "id", default=None)
+    tags = ListFactory(element_amount=3, choices=TAGS)
+    comment = CommentFactory
+
+class Comment(EmbbededFactory):
+    creation_date = DateFactory(max=datetime.now(), min=datetime.now()- datetime.timedelta(day=1))
+    content = LoremIpsumField(max_chars=30)
+
+
+worker = FactoryWorker()
+worker.generate(UserFactory, amount=100)
+worker.generate(PostFactory, amount=400)
+
+```
