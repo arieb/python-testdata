@@ -9,13 +9,12 @@ class CycleSequenceFactory(Factory):
         self._cycle_iterator = itertools.cycle(sequence)
 
     def __call__(self):
-        return self._cycle_iterator()
+        return self._cycle_iterator.next()
 
-class RondomSequenceFactory(Factory):
+class RondomSelection(Factory):
     def __init__(self, sequence, element_amount=0):
-        super(RondomSequenceFactory, self).__init__(element_amount)
+        super(RondomSelection, self).__init__(element_amount)
         self._sequence = sequence
 
     def __call__(self):
         return random.choice(self._sequence)
-

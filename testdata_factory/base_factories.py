@@ -32,10 +32,11 @@ class Factory(object):
     def current_index(self):
         return self._current_index
 
-    def _get_element_amount(self):
+    @property
+    def element_amount(self):
         return self._element_amount
     
-    def _set_element_amount(self, new_element_amount):
+    def set_element_amount(self, new_element_amount):
         if self._has_started:
             raise FactoryStartedAlready("can't change 'element_amount' if factory has started")
         self._element_amount = new_element_amount
@@ -44,7 +45,6 @@ class Factory(object):
     def precent(self):
         return (float(self.current_index) / float(self.element_amount)) * 100
 
-    element_amount = property(_get_element_amount, _set_element_amount)
 
 
 class DictFactory(Factory):
@@ -52,12 +52,20 @@ class DictFactory(Factory):
         super(DictFactory, self).__init__(element_amount)
         self._child_factories = {}
         self._build_child_factories()
+        self.set_element_amount(element_amount)
+
+    def __iter__(self):
+        self._iter_child_factories()
+        return self
 
     def _build_child_factories(self):
         for key, value in self.__class__.__dict__.iteritems():
             if issubclass(type(value), Factory):
-                value.element_amount = self.element_amount
-                self._child_factories[key] = iter(value)
+                self._child_factories[key] = value
+
+    def _iter_child_factories(self):
+        for key in self._child_factories.copy().keys():
+            self._child_factories[key] = iter(self._child_factories[key])
 
     def __call__(self):
         result = {}
@@ -70,3 +78,8 @@ class DictFactory(Factory):
         super(DictFactory, self).increase_index()
         for child_factory in self._child_factories.values():
             child_factory.increase_index()
+    
+    def set_element_amount(self, new_element_amount):
+        super(DictFactory, self).set_element_amount(new_element_amount)
+        for child_factory in self._child_factories.values():
+            child_factory.set_element_amount(new_element_amount)
