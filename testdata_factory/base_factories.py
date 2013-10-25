@@ -45,8 +45,6 @@ class Factory(object):
     def precent(self):
         return (float(self.current_index) / float(self.element_amount)) * 100
 
-
-
 class DictFactory(Factory):
     def __init__(self, element_amount=0):
         super(DictFactory, self).__init__(element_amount)
@@ -83,3 +81,20 @@ class DictFactory(Factory):
         super(DictFactory, self).set_element_amount(new_element_amount)
         for child_factory in self._child_factories.values():
             child_factory.set_element_amount(new_element_amount)
+
+class ListFactory(Factory):
+    def __init__(self, element_amount=0, factory_class=None, elements_per_list=0):
+        self._factory = iter(factory_class(element_amount * elements_per_list))
+        self._elements_per_list = elements_per_list
+
+    def __call__(self):
+        return [self._factory.next() for i in xrange(self._elements_per_list)]
+
+class Callable(Factory):
+    def __self__(self, callable_obj, element_amount=0):
+        super(Callable, self).__init__(element_amount)
+        self._callable_obj = callable_obj
+
+    def __call__(self):
+        return self._callable_obj()
+

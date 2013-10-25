@@ -1,3 +1,4 @@
-class MongoFactoryError(Exception): pass
-class MissingElementAmountValue(MongoFactoryError): pass
-class FactoryStartedAlready(MongoFactoryError): pass
+class TestDataError(Exception): pass
+class MissingElementAmountValue(TestDataError): pass
+class FactoryStartedAlready(TestDataError): pass
+class NoSuchDatatype(TestDataError): pass
