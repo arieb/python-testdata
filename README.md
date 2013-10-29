@@ -35,5 +35,4 @@ for user in Users(10): # let say we only want 10 users
 * Add usage documentation for each factory (using doctest maybe?)
 * Add tests
 * Add GeoLocationFactories to generates Location and distance related data (for example, random points near a central point).
-  to a total of a 100 precent. so it will 
 * Add Statistical Factories

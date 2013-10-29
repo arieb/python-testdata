@@ -91,7 +91,12 @@ class ListFactory(Factory):
         return [self._factory.next() for i in xrange(self._elements_per_list)]
 
 class Callable(Factory):
-    def __self__(self, callable_obj, element_amount=0):
+    """
+    A basic factory that returns the result of a call to `callable_obj` __call__ function
+    :param callable_obj: an object that implements the __call__ method
+    :param element_amount: the amount of elements this factory will create.
+    """
+    def __init__(self, callable_obj, element_amount=0):
         super(Callable, self).__init__(element_amount)
         self._callable_obj = callable_obj
 
