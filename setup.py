@@ -9,10 +9,10 @@ def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name = "testdata_factory",
+    name = "python-testdata",
     version = "0.1",
     author = "Arie Bro",
-    description = "A small package that helps generate content to fill database for tests.",
+    description = "A small package that helps generate content to fill databases for tests.",
     license = "BSD",
     package_data = {
         '': ['.md']
@@ -20,8 +20,8 @@ setup(
     install_requires = [
         'fake-factory'
     ],
-    keywords = "mongodb factory testing test unittest mongo data",
-    packages = ['testdata_factory'],
+    keywords = "mongodb factory testing test unittest mongo data testdata database json",
+    packages = ['testdata'],
     long_description=read('README.md'),
     classifiers=[
         "Development Status :: 3 - Alpha",
