@@ -11,9 +11,9 @@ class CycleSequenceFactory(Factory):
     def __call__(self):
         return self._cycle_iterator.next()
 
-class RondomSelection(Factory):
+class RandomSelection(Factory):
     def __init__(self, sequence, element_amount=0):
-        super(RondomSelection, self).__init__(element_amount)
+        super(RandomSelection, self).__init__(element_amount)
         self._sequence = sequence
 
     def __call__(self):

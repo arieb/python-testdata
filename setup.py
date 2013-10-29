@@ -18,7 +18,7 @@ setup(
         '': ['.md']
     },
     install_requires = [
-        'fake-factory'
+        'fake-factory == 0.2'
     ],
     keywords = "mongodb factory testing test unittest mongo data testdata database json",
     packages = ['testdata'],

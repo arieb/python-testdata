@@ -3,27 +3,26 @@ python-testdata
 
 A simple package that generates data for tests.
 
-# Example
+testdata provides the basic Factory and DictFactory classes that generate content.
+it also provides many more specialized factories that provide extended functionality.
+every Factory instance knows how many elements its going to generate, this enables us to generate statistical results.
+
+testdata isn't bound to a specifc database, but does include database specfic modules (like MongoDB - mongo_factories.py)
+but it will always be clean of database related dependencies.
+
+# Examples
 ```python
-class UserFactory(DictFactory):
-    firstname = StringFactory(min_chars=3, max_chars=10)
-    lastname = StringFactory(prefix="N", max_chars=10)
-    age = RandomSelection(xrange(1, 60))
-    email = StringFactory(suffix="@mail.com", max_char=10)
+We integrate the awsome fake-factory package to generate data using FakeDataFactory.
 
-TAGS = ["mongodb", "python", "mongo", "foo"]
+lets create a very simple factory that generates Users:
 
-class PostFactory(DictFactory):
-    owner = FieldFromDocument("collection_name", "id", default=None)
-    tags = ListFactory(element_amount=3, choices=TAGS)
-    comment = CommentFactory
+import testdata
 
-class Comment(DictFactory):
-    creation_date = DateFactory(max=datetime.now(), min=datetime.now()- datetime.timedelta(day=1))
-    content = LoremIpsumFactory(max_chars=30)
-
-
-for user in UserFactory(100):
-    # do something with the new user user
-
+class User(testdata.DictFactory):
+    id = testdata.CountingFactory(10)
+    firstname = testdata.FakeDataFactory('firstName')
+    lastname = testdata.FakeDataFactory('lastName')
+    address = testdata.FakeDataFactory('address')
+    age = testdata.RandomInteger(10, 30) 
+    gender = testdata.RandomSelection(['female', 'male'])
 ```
