@@ -84,6 +84,7 @@ class DictFactory(Factory):
 
 class ListFactory(Factory):
     def __init__(self, element_amount=0, factory_class=None, elements_per_list=0):
+        super(ListFactory, self).__init__(element_amount)
         self._factory = iter(factory_class(element_amount * elements_per_list))
         self._elements_per_list = elements_per_list
 
@@ -92,9 +93,13 @@ class ListFactory(Factory):
 
 class Callable(Factory):
     """
-    A basic factory that returns the result of a call to `callable_obj` __call__ function
+    A basic factory that returns the result of a call to `callable_obj`s __call__ function
     :param callable_obj: an object that implements the __call__ method
     :param element_amount: the amount of elements this factory will create.
+
+    Example:
+    >>> list(Callable(lambda: 'foo', 4))
+    ['foo', 'foo', 'foo', 'foo']
     """
     def __init__(self, callable_obj, element_amount=0):
         super(Callable, self).__init__(element_amount)

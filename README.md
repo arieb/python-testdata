@@ -32,6 +32,14 @@ for user in Users(10): # let say we only want 10 users
 ```
 
 ## Factories
+#### Bases
+|Factory Class| Description|
+|-------|:-----------|
+| Factory | The base class of all the factories.|
+| DictFactory | A very powerful base class. allows sub classing to create factories that generate dicts with a specific schema (see [Examples][#Examples]). |
+| ListFactory | |
+| Callable | Gets a callable object as an argument and returns the result of calling the object on every iteration |
+
 #### Dates
 |Factory Class| Description|
 |-------|:-----------|
