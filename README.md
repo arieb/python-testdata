@@ -31,6 +31,13 @@ for user in Users(10): # let say we only want 10 users
     # or more likely you'd want to insert them into your favorite database (MongoDB, ElasticSearch, ..)
 ```
 
+## Factories
+#### Dates
+|Factory Class| Description|
+|-------|:-----------|
+| RandomDateFactory | Generates random dates (python's datetime) between 2 dates|
+| DateIntervalFactory | Generates datetime objects starting from `base` while adding  `delta` to it each iteration.
+
 ## Todos
 * Add usage documentation for each factory (using doctest maybe?)
 * Add tests
