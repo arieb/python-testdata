@@ -83,9 +83,20 @@ class DictFactory(Factory):
             child_factory.set_element_amount(new_element_amount)
 
 class ListFactory(Factory):
-    def __init__(self, element_amount=0, factory_class=None, elements_per_list=0):
+    """
+    A factory that returns on each iteration a list of `elements_per_list` items returned 
+    from calls to the given factory.
+
+    Example,
+    >>> import testdata
+    >>> f = ListFactory(testdata.CountingFactory(1), 5, 3)
+    >>> list(f)
+    [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15]]
+    """
+    def __init__(self, factory=None, element_amount=0,  elements_per_list=0):
         super(ListFactory, self).__init__(element_amount)
-        self._factory = iter(factory_class(element_amount * elements_per_list))
+        factory.set_element_amount(element_amount * elements_per_list)
+        self._factory = iter(factory)
         self._elements_per_list = elements_per_list
 
     def __call__(self):
@@ -93,7 +104,8 @@ class ListFactory(Factory):
 
 class Callable(Factory):
     """
-    A basic factory that returns the result of a call to `callable_obj`s __call__ function
+    A factory that returns the result of a call to `callable_obj`s __call__ function,
+    on each iteration.
     :param callable_obj: an object that implements the __call__ method
     :param element_amount: the amount of elements this factory will create.
 
