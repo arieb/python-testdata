@@ -1,6 +1,7 @@
 from collections import defaultdict
 from .errors import MissingElementAmountValue, FactoryStartedAlready, NoSuchOlderField
 
+
 class Factory(object):
     def __init__(self, generation=0, element_amount=0):
         self._element_amount = element_amount

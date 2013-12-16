@@ -1,6 +1,6 @@
 import random
 import datetime
-
+from .errors import NoSuchOlderField, InvalidFieldType
 from .base_factories import Factory
 
 class RandomDateFactory(Factory):
@@ -56,3 +56,21 @@ class DateIntervalFactory(Factory):
 
     def __call__(self):
         return self._base + self.current_index * self._delta
+
+class RelativeToDatetimeField(Factory):
+    """
+    Adds a datetime.timedelta to a datetime value from an older generation field.
+    """
+    def __init__(self, datetime_field_name, delta, generation=0, element_amount=0):
+        super(RelativeToDatetimeField, self).__init__(generation, element_amount)
+        self._datetime_field_name = datetime_field_name
+        self._delta = delta
+
+    def __call__(self):
+        if not self.older_generations.has_key(self._datetime_field_name):
+            raise NoSuchOlderField("Missing {} field in older generation fields".format(self._datetime_field_name))
+        other_field = self.older_generations[self._datetime_field_name]
+        if type(other_field) != datetime.datetime:
+            raise InvalidFieldType("field {} isn't of type datetime.datetime")
+        return self.older_generations[self._datetime_field_name] + self._delta
+
