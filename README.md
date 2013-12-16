@@ -38,7 +38,7 @@ See Docstrings for more examples and doctests.
 
 #### Bases
 |Factory Class| Description|
-|-------|:-----------|
+|:-------|:-----------|
 | Factory | The base class of all the factories.|
 | DictFactory | A very powerful base class. allows sub classing to create factories that generate dicts with a specific schema (see [Examples][#Examples]). |
 | ListFactory | A factory that returns on each iteration a list of `elements_per_list` items returned from calls to the given factory. |
@@ -46,10 +46,10 @@ See Docstrings for more examples and doctests.
 | ClonedField | A factory that copies the value of another factory. |
 #### Dates
 |Factory Class| Description|
-|-------|:-----------|
+|:-------|:-----------|
 | RandomDateFactory | Generates random dates (python's datetime) between 2 dates|
 | DateIntervalFactory | Generates datetime objects starting from `base` while adding  `delta` to it each iteration.
-| RelativeToDatetimeField | Generates datetime object relative to another datetime field, like if you have `start_time` which is a RandomDateFactory field, and want an `end_time` field that is always 15 mintues later.| 
+| RelativeToDatetimeField | Generates datetime object relative to another datetime field, like if you have `start_time` which is a RandomDateFactory field, and want an `end_time` field that is always 15 minutes later.| 
 
 ## Todos
 * Add usage documentation for each factory (using doctest maybe?)
