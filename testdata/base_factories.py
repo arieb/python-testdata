@@ -93,7 +93,7 @@ class DictFactory(Factory):
     def _build_child_factories(self):
         for key, value in self.__class__.__dict__.iteritems():
             if issubclass(type(value), Factory):
-                self._child_factories[value.generation][key] = value
+                self._child_factories[value.generation][key] = copy(value)
 
     def __iter__(self):
         self._iter_child_factories()
