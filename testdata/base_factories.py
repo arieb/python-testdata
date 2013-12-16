@@ -1,8 +1,13 @@
 from collections import defaultdict
+from copy import copy
 from .errors import MissingElementAmountValue, FactoryStartedAlready, NoSuchOlderField
 
 
 class Factory(object):
+    """
+    The base class of all the factories.
+    Implementes the core factory logic.
+    """
     def __init__(self, generation=0, element_amount=0):
         self._element_amount = element_amount
         self._generation = generation
@@ -61,6 +66,23 @@ class Factory(object):
         return self._old_generation_factories
 
 class DictFactory(Factory):
+    """
+    One of the most useful and basic factories.
+    This factory is meant to be subclassed, and other factories should be defined
+    as class variables.
+    This factory is used to generate dictonaries which have the results of the factories
+    it contains as keys and values.
+
+    Example:
+    >>> import testdata
+    >>> class Users(testdata.DictFactory):
+    ...    id = testdata.CountingFactory(10)
+    ...    age = testdata.RandomInteger(10, 10) 
+    ...    gender = testdata.RandomSelection(['male'])
+    >>> [result] = [i for i in Users(0, 1)]
+    >>> result
+    {'gender': 'male', 'age': 10, 'id': 10}
+    """
     def __init__(self, generation=0, element_amount=0):
         super(DictFactory, self).__init__(generation, element_amount)
         self._child_factories = defaultdict(dict)
