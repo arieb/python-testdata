@@ -1,5 +1,5 @@
 from collections import defaultdict
-from .errors import MissingElementAmountValue, FactoryStartedAlready
+from .errors import MissingElementAmountValue, FactoryStartedAlready, NoSuchOlderField
 
 class Factory(object):
     def __init__(self, generation=0, element_amount=0):
@@ -162,10 +162,19 @@ class ClonedField(Factory):
     >>> [result] = [i for i in Foo(0, 1)]
     >>> result['id'] == result['cloned_id']
     True
+    >>> class Bar(testdata.DictFactory):
+    ...     id = testdata.CountingFactory(0, 0)
+    ...     cloned_id = ClonedField("id", 0)
+    >>> [result] = [i for i in Bar(0, 1)]
+    Traceback (most recent call last):
+    NoSuchOlderField: Missing id field in older generation fields
     """
     def __init__(self, cloned_field_name, generation=0, element_amount=0):
         super(ClonedField, self).__init__(generation, element_amount)
         self._cloned_field_name = cloned_field_name
 
     def __call__(self):
+        if not self.older_generations.has_key(self._cloned_field_name):
+            raise NoSuchOlderField("Missing {} field in older generation fields".format(self._cloned_field_name))
+
         return self.older_generations[self._cloned_field_name]

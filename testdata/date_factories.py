@@ -56,4 +56,3 @@ class DateIntervalFactory(Factory):
 
     def __call__(self):
         return self._base + self.current_index * self._delta
-
