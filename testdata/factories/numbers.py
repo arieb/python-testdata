@@ -1,10 +1,10 @@
 import random
 
-from .base_factories import Factory, DependentField
+from ..base import Factory, DependentField
 
 class RandomNumber(Factory):
-    def __init__(self, minimum=0, maximum=0, generation=0, element_amount=0):
-        super(RandomNumber, self).__init__(generation, element_amount)
+    def __init__(self, minimum=0, maximum=0, element_amount=0):
+        super(RandomNumber, self).__init__(element_amount)
         self._minimum = minimum
         self._maximum = maximum
 

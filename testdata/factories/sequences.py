@@ -1,7 +1,7 @@
 import itertools
 import random
 
-from .base_factories import Factory
+from ..base import Factory
 
 class CycleSequenceFactory(Factory):
     def __init__(self, sequence, element_amount=0):

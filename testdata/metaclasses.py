@@ -1,7 +1,7 @@
 from collections import defaultdict
 from .errors import UnmetDependentFields, NoFactoriesDefined
 
-from base_factories import Factory, DependentField
+from .base import Factory, DependentField
 
 class DictFactoryBuilder(type):
     """

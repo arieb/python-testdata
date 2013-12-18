@@ -1,6 +1,6 @@
 import random
 import string
-from .base_factories import Factory
+from ..base import Factory
 
 
 class RandomLengthStringFactory(Factory):

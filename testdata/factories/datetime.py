@@ -1,13 +1,13 @@
 import random
 import datetime
-from .errors import InvalidFieldType
-from .base_factories import Factory, DependentField
+from ..errors import InvalidFieldType
+from ..base import Factory, DependentField
 
 class RandomDateFactory(Factory):
     """
     Generates a random dates between 2 dates.
     """
-    def __init__(self, minimum, maximum, generation=0, element_amount=0):
+    def __init__(self, minimum, maximum, element_amount=0):
         """
         Constucts the RandomDateFactory.
         :type minimum: datetime.datetime
@@ -27,7 +27,7 @@ class RandomDateFactory(Factory):
         >>> datetime.datetime(2013, 10, 1, 2, 1, 0, 2) in f
         False
         """
-        super(RandomDateFactory, self).__init__(generation, element_amount)
+        super(RandomDateFactory, self).__init__(element_amount)
         self._maximum = maximum 
         self._minimum = minimum 
         delta = maximum - minimum
@@ -49,8 +49,8 @@ class DateIntervalFactory(Factory):
     >>> list(DateIntervalFactory(datetime.datetime(2013, 10, 1), datetime.timedelta(days=1), 0, 3))
     [datetime.datetime(2013, 10, 1, 0, 0), datetime.datetime(2013, 10, 2, 0, 0), datetime.datetime(2013, 10, 3, 0, 0)]
     """
-    def __init__(self, base, delta, generation=0, element_amount=0):
-        super(DateIntervalFactory, self).__init__(generation, element_amount)
+    def __init__(self, base, delta, element_amount=0):
+        super(DateIntervalFactory, self).__init__(element_amount)
         self._base = base
         self._delta = delta
 
@@ -59,7 +59,7 @@ class DateIntervalFactory(Factory):
 
 class RelativeToDatetimeField(DependentField):
     """
-    Adds a datetime.timedelta to a datetime value from an older generation field.
+    Adds a datetime.timedelta to a datetime value from an dependent  field.
     """
     def __init__(self, datetime_field_name, delta, element_amount=0):
         super(RelativeToDatetimeField, self).__init__([datetime_field_name], element_amount)

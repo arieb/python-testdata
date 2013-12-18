@@ -1,5 +1,5 @@
-from .base_factories import Callable
-from .errors import NoSuchDatatype
+from ..base import Callable
+from ..errors import NoSuchDatatype
 import faker
 
 class FakeDataFactory(Callable):

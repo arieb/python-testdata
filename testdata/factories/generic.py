@@ -1,4 +1,4 @@
-from .base_factories import Factory
+from ..base import Factory
 
 
 class Constant(Factory):

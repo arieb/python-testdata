@@ -1,6 +1,6 @@
 from copy import deepcopy 
-from base_factories import Factory
-from metaclasses import DictFactoryBuilder
+from .base import Factory
+from .metaclasses import DictFactoryBuilder
 
 class DictFactory(Factory):
     """
