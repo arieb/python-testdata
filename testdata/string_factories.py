@@ -8,8 +8,8 @@ class RandomLengthStringFactory(Factory):
     MIN_CHAR_DEFAULT = 3
     MAX_CHAR_DEFAULT = 100
 
-    def __init__(self, min_chars=None, max_chars=None, prefix=None, suffix=None, generation=0, element_amount=0):
-        super(RandomLengthStringFactory, self).__init__(generation, element_amount)
+    def __init__(self, min_chars=None, max_chars=None, prefix=None, suffix=None, element_amount=0):
+        super(RandomLengthStringFactory, self).__init__(element_amount)
 
         self._min_chars = min_chars if min_chars else self.MIN_CHAR_DEFAULT
         self._max_chars = max_chars if max_chars else self.MAX_CHAR_DEFAULT

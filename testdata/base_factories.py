@@ -1,18 +1,13 @@
-from collections import defaultdict
-from copy import copy
-from .errors import MissingElementAmountValue, FactoryStartedAlready, NoSuchOlderField
-
+from .errors import MissingElementAmountValue, FactoryStartedAlready, MissingRequiredFields
 
 class Factory(object):
     """
     The base class of all the factories.
     Implementes the core factory logic.
     """
-    def __init__(self, generation=0, element_amount=0):
+    def __init__(self, element_amount=0):
         self._element_amount = element_amount
-        self._generation = generation
         self._current_index = 0
-        self._old_generation_factories = {}
         self._has_started = False
 
     def __iter__(self):
@@ -54,83 +49,44 @@ class Factory(object):
     def precent(self):
         return (float(self.current_index) / float(self.element_amount)) * 100
 
-    @property
-    def generation(self):
-        return self._generation
 
-    def set_older_generation(self, other_factories):
-        self._old_generation_factories = other_factories
-
-    @property
-    def older_generations(self):
-        return self._old_generation_factories
-
-class DictFactory(Factory):
+class DependentField(Factory):
     """
-    One of the most useful and basic factories.
-    This factory is meant to be subclassed, and other factories should be defined
-    as class variables.
-    This factory is used to generate dictonaries which have the results of the factories
-    it contains as keys and values.
-
-    Example:
-    >>> import testdata
-    >>> class Users(testdata.DictFactory):
-    ...    id = testdata.CountingFactory(10)
-    ...    age = testdata.RandomInteger(10, 10) 
-    ...    gender = testdata.RandomSelection(['male'])
-    >>> [result] = [i for i in Users(0, 1)]
-    >>> result
-    {'gender': 'male', 'age': 10, 'id': 10}
+    This is the base class of fields that their result depends on the values
+    of another field.
+    This should be used inside the DictFactory.
     """
-    def __init__(self, generation=0, element_amount=0):
-        super(DictFactory, self).__init__(generation, element_amount)
-        self._child_factories = defaultdict(dict)
-        self._build_child_factories()
-        self._oldest_generation = self._get_oldest_generation()
-        self.set_element_amount(element_amount)
+    def __init__(self, depending_field_names=[], element_amount=0):
+        super(DependentField, self).__init__(element_amount)
+        self._depending_field_names = depending_field_names
+        self._depending_fields = {}
 
-    def _build_child_factories(self):
-        for key, value in self.__class__.__dict__.iteritems():
-            if issubclass(type(value), Factory):
-                self._child_factories[value.generation][key] = copy(value)
+    def _check_missing_fields(self, required_fields, available_fields):
+        missing_fields = set(required_fields) - set(available_fields)
+        if missing_fields:
+            raise MissingRequiredFields(str(missing_fields))
 
-    def __iter__(self):
-        self._iter_child_factories()
-        return self
+    def update_depending(self, new_depending_values):
+        """
+        updates the depending field values.
+        The fields should be updated before each call to the factory.
+        """
+        self._check_missing_fields(set(self._depending_field_names), set(new_depending_values.keys()))
 
-    def _iter_child_factories(self):
-        child_factories = self._child_factories.copy()
-        for generation in child_factories.keys():
-            for key in child_factories[generation].keys(): 
-                self._child_factories[generation][key] = iter(child_factories[generation][key])
-
-    def _get_oldest_generation(self):
-        return max(self._child_factories.keys())
+        for field in self._depending_field_names:
+            self._depending_fields[field] = new_depending_values[field]
 
     def __call__(self):
-        result = {}
-        for i in xrange(self._oldest_generation + 1):
-            generation_result = {}
-            for factory_name, factory in self._child_factories[i].iteritems():
-                factory.set_older_generation(result)
-                generation_result[factory_name] = factory() 
+        # if we are missing depending fields values
+        self._check_missing_fields(set(self.depending_field_names), set(self._depending_fields.keys())) 
 
-            result.update(generation_result)
+    @property
+    def depending_field_names(self):
+        return self._depending_field_names
 
-        return result
-
-    def increase_index(self):
-        super(DictFactory, self).increase_index()
-        for i in xrange(self._oldest_generation + 1):
-            for child_factory in self._child_factories[i].values():
-                child_factory.increase_index()
-    
-    def set_element_amount(self, new_element_amount):
-        super(DictFactory, self).set_element_amount(new_element_amount)
-        for i in xrange(self._oldest_generation + 1):
-            for child_factory in self._child_factories[i].values():
-                child_factory.set_element_amount(new_element_amount)
+    @property
+    def depending_fields(self):
+        return self._depending_fields.copy()
 
 class ListFactory(Factory):
     """
@@ -143,8 +99,8 @@ class ListFactory(Factory):
     >>> list(f)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15]]
     """
-    def __init__(self, factory=None, generation=0, element_amount=0, elements_per_list=0):
-        super(ListFactory, self).__init__(generation, element_amount)
+    def __init__(self, factory=None, element_amount=0, elements_per_list=0):
+        super(ListFactory, self).__init__(element_amount)
         factory.set_element_amount(element_amount * elements_per_list)
         self._factory = iter(factory)
         self._elements_per_list = elements_per_list
@@ -163,14 +119,14 @@ class Callable(Factory):
     >>> list(Callable(lambda: 'foo', 0, 4))
     ['foo', 'foo', 'foo', 'foo']
     """
-    def __init__(self, callable_obj, generation=0, element_amount=0):
-        super(Callable, self).__init__(generation, element_amount)
+    def __init__(self, callable_obj, element_amount=0):
+        super(Callable, self).__init__(element_amount)
         self._callable_obj = callable_obj
 
     def __call__(self):
         return self._callable_obj()
 
-class ClonedField(Factory):
+class ClonedField(DependentField):
     """
     A factory that copies the value of another factory.
     Note:
@@ -192,12 +148,10 @@ class ClonedField(Factory):
     Traceback (most recent call last):
     NoSuchOlderField: Missing id field in older generation fields
     """
-    def __init__(self, cloned_field_name, generation=0, element_amount=0):
-        super(ClonedField, self).__init__(generation, element_amount)
+    def __init__(self, cloned_field_name, element_amount=0):
+        super(ClonedField, self).__init__([cloned_field_name], element_amount)
         self._cloned_field_name = cloned_field_name
 
     def __call__(self):
-        if not self.older_generations.has_key(self._cloned_field_name):
-            raise NoSuchOlderField("Missing {} field in older generation fields".format(self._cloned_field_name))
-
-        return self.older_generations[self._cloned_field_name]
+        super(ClonedField, self).__call__()
+        return self.depending_fields[self._cloned_field_name]
