@@ -11,11 +11,29 @@ class DictFactoryBuilder(type):
         if name == "DictFactory": # we only modify the children of DictFactory, not the DictFactory itself
             return super(DictFactoryBuilder, meta).__new__(meta, name, bases, dct)
 
-        _child_factory_tree = defaultdict(dict)
+        _child_factory_tree = DictFactoryBuilder._collect_bases_children_trees(bases)
         DictFactoryBuilder._build_children_tree(_child_factory_tree, dct)
         DictFactoryBuilder._clean_factories(dct)
         dct["_child_factory_tree"] = _child_factory_tree
         return super(DictFactoryBuilder, meta).__new__(meta, name, bases, dct)
+
+    @staticmethod
+    def _collect_bases_children_trees(bases):
+        all_tree = defaultdict(dict)
+        for base in bases:
+            if Factory in base.__bases__: # means we reached the DictFactory cls
+                return defaultdict(dict)
+            current_tree = DictFactoryBuilder._fuse_child_trees(
+                    base._child_factory_tree,
+                    DictFactoryBuilder._collect_bases_children_trees(base.__bases__))
+            DictFactoryBuilder._fuse_child_trees(all_tree, current_tree)
+        return all_tree
+
+    @staticmethod
+    def _fuse_child_trees(p,q):
+        for key in q.keys():
+            p[key].update(q[key])
+        return p
 
     @staticmethod
     def _clean_factories(dct):
