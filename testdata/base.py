@@ -1,3 +1,4 @@
+from copy import deepcopy
 from .errors import MissingElementAmountValue, FactoryStartedAlready, MissingRequiredFields
 
 class Factory(object):
@@ -5,8 +6,8 @@ class Factory(object):
     The base class of all the factories.
     Implementes the core factory logic.
     """
-    def __init__(self, element_amount=0):
-        self._element_amount = element_amount
+    def __init__(self):
+        self._element_amount = 0
         self._current_index = 0
         self._has_started = False
 
@@ -49,6 +50,13 @@ class Factory(object):
     def precent(self):
         return (float(self.current_index) / float(self.element_amount)) * 100
 
+    def generate(self, element_amount):
+        """
+        This method returns a Factory that can be iterated.
+        """
+        instance = deepcopy(self)
+        instance.set_element_amount(element_amount)
+        return instance
 
 class DependentField(Factory):
     """
@@ -58,8 +66,8 @@ class DependentField(Factory):
 
     See `ClonedField` class for an example usage.
     """
-    def __init__(self, depending_field_names=[], element_amount=0):
-        super(DependentField, self).__init__(element_amount)
+    def __init__(self, depending_field_names=[]):
+        super(DependentField, self).__init__()
         self._depending_field_names = depending_field_names
         self._depending_fields = {}
 
@@ -97,15 +105,22 @@ class ListFactory(Factory):
 
     Example,
     >>> import testdata
-    >>> f = ListFactory(testdata.CountingFactory(1), 5, 3)
+    >>> f = ListFactory(testdata.CountingFactory(1), 3).generate(5)
     >>> list(f)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15]]
     """
-    def __init__(self, factory=None, element_amount=0, elements_per_list=0):
-        super(ListFactory, self).__init__(element_amount)
-        factory.set_element_amount(element_amount * elements_per_list)
-        self._factory = iter(factory)
+    def __init__(self, factory=None, elements_per_list=0):
+        super(ListFactory, self).__init__()
+        self._factory = factory
         self._elements_per_list = elements_per_list
+
+    def __iter__(self):
+        self._factory = iter(self._factory)
+        return super(ListFactory, self).__iter__()
+
+    def set_element_amount(self, element_amount):
+        super(ListFactory, self).set_element_amount(element_amount)
+        self._factory.set_element_amount(element_amount * self._elements_per_list)
 
     def __call__(self):
         return [self._factory.next() for i in xrange(self._elements_per_list)]
@@ -115,14 +130,13 @@ class Callable(Factory):
     A factory that returns the result of a call to `callable_obj`s __call__ function,
     on each iteration.
     :param callable_obj: an object that implements the __call__ method
-    :param element_amount: the amount of elements this factory will create.
 
     Example:
-    >>> list(Callable(lambda: 'foo', 4))
+    >>> list(Callable(lambda: 'foo').generate(4))
     ['foo', 'foo', 'foo', 'foo']
     """
-    def __init__(self, callable_obj, element_amount=0):
-        super(Callable, self).__init__(element_amount)
+    def __init__(self, callable_obj ):
+        super(Callable, self).__init__()
         self._callable_obj = callable_obj
 
     def __call__(self):
@@ -140,7 +154,7 @@ class ClonedField(DependentField):
     >>> class Foo(testdata.DictFactory):
     ...     id = testdata.CountingFactory(0)
     ...     cloned_id = ClonedField("id")
-    >>> [result] = [i for i in Foo(1)]
+    >>> [result] = [i for i in Foo().generate(1)]
     >>> result['id'] == result['cloned_id']
     True
     >>> class Bar(testdata.DictFactory):
@@ -149,8 +163,8 @@ class ClonedField(DependentField):
     Traceback (most recent call last):
     UnmetDependentFields: The fields: set(['cloned_id']) - depend on fields that aren't defined!
     """
-    def __init__(self, cloned_field_name, element_amount=0):
-        super(ClonedField, self).__init__([cloned_field_name], element_amount)
+    def __init__(self, cloned_field_name):
+        super(ClonedField, self).__init__([cloned_field_name])
         self._cloned_field_name = cloned_field_name
 
     def __call__(self):

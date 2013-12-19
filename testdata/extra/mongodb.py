@@ -18,13 +18,12 @@ class FieldFromCollection(RandomSelection):
     :param collection: The name of the collection inside the database to connect to.
     :param field_name: The field in the collection we want to get the values from.
     :param filter_query: A filter to pass to the pymongo.Collection's find function.
-    :param element_amount: The amount of elements that are going to be generated.
     :param **connection_kw - The parameters that are passed to the pymongo.MongoClient __init__ function.
     """
-    def __init__(self, database, collection, field_name, filter_query={}, element_amount=0, **connection_kw):
+    def __init__(self, database, collection, field_name, filter_query={}, **connection_kw):
         with pymongo.MongoClient(**connection_kw) as client:
             db = client[database]
             self._collection = db[collection]
             self._field_name = field_name
             possible_values = self._collection.find(filter_query).distinct(field_name)
-        super(FieldFromCollection, self).__init__(possible_values, element_amount)
+        super(FieldFromCollection, self).__init__(possible_values)

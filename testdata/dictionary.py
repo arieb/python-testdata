@@ -16,17 +16,16 @@ class DictFactory(Factory):
     ...    id = testdata.CountingFactory(10)
     ...    age = testdata.RandomInteger(10, 10) 
     ...    gender = testdata.RandomSelection(['male'])
-    >>> [result] = [i for i in Users(1)]
+    >>> [result] = [i for i in Users().generate(1)]
     >>> result
     {'gender': 'male', 'age': 10, 'id': 10}
     """
     __metaclass__ = DictFactoryBuilder
 
-    def __init__(self, element_amount=0):
-        super(DictFactory, self).__init__(element_amount)
+    def __init__(self):
+        super(DictFactory, self).__init__()
         self._child_factories = deepcopy(self._child_factory_tree)
         self._oldest_generation = max(self._child_factories.keys())
-        self.set_element_amount(element_amount)
 
     def __iter__(self):
         self._iter_child_factories()

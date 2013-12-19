@@ -9,11 +9,11 @@ class Constant(Factory):
     Returns the same value on each iteration.
 
     Example,
-    >>> [i for i in Constant(1, 5)]
+    >>> [i for i in Constant(1).generate(5)]
     [1, 1, 1, 1, 1]
     """
-    def __init__(self, constant_value, element_amount=0):
-        super(Constant, self).__init__(element_amount)
+    def __init__(self, constant_value,):
+        super(Constant, self).__init__()
         self._constant_value = constant_value
 
     def __call__(self):
@@ -31,7 +31,7 @@ class Sum(Factory):
 
     A simple Example,
     >>> import testdata
-    >>> for i in testdata.Sum([testdata.CountingFactory(10, 5), testdata.CountingFactory(1, 1)], 5):
+    >>> for i in testdata.Sum([testdata.CountingFactory(10, 5), testdata.CountingFactory(1, 1)]).generate(5):
     ...     print i
     11
     17
@@ -39,13 +39,12 @@ class Sum(Factory):
     29
     35
     """
-    def __init__(self, factories=[], element_amount=0, sum_func=operator.add):
-        super(Sum, self).__init__(element_amount)
+    def __init__(self, factories=[], sum_func=operator.add):
+        super(Sum, self).__init__()
         if len(factories) == 0:
             raise NoFactoriesProvided("You must pass at least one factory.")
         self._factories = deepcopy(factories)
         self._sum_func = sum_func
-        self.set_element_amount(element_amount)
 
     def __iter__(self):
         for i, factory in enumerate(self._factories):

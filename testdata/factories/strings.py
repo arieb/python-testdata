@@ -8,8 +8,8 @@ class RandomLengthStringFactory(Factory):
     MIN_CHAR_DEFAULT = 3
     MAX_CHAR_DEFAULT = 100
 
-    def __init__(self, min_chars=None, max_chars=None, prefix=None, suffix=None, element_amount=0):
-        super(RandomLengthStringFactory, self).__init__(element_amount)
+    def __init__(self, min_chars=None, max_chars=None, prefix=None, suffix=None):
+        super(RandomLengthStringFactory, self).__init__()
 
         self._min_chars = min_chars if min_chars else self.MIN_CHAR_DEFAULT
         self._max_chars = max_chars if max_chars else self.MAX_CHAR_DEFAULT
@@ -38,13 +38,13 @@ class HashHexDigestFactory(Factory):
     :param element_amount: The amount of values that will be generated
 
     Examples,
-    >> for i in HashHexDigestFactory(hashlib.md5 , 3):
+    >> for i in HashHexDigestFactory(hashlib.md5).generate(3):
     ..      print i
     aaaa6305d730ca70eae904ca47e427c8
     d172baa4019279f3f78a624f2a0b3e2b
     78cd377dc9421cd4252d8110f9acb7c4
 
-    >> for i in HashHexDigestFactory(hashlib.sha224, 3):
+    >> for i in HashHexDigestFactory(hashlib.sha224).generate(3):
     ..      print i
     8dfd75184b6b5f9be73050dc084a8a3ebcf4c45fc5ca334df911c7c5
     ee1822b3cd7f58eb81bd37b7e5933d73a62578a2c060e7e4808569d0
@@ -54,8 +54,8 @@ class HashHexDigestFactory(Factory):
     _MAX_VALUE_LENGTH = 100
     _MIN_VALUE_LENGTH = 3
 
-    def __init__(self, hash_class, element_amount=0):
-        super(HashHexDigestFactory, self).__init__(element_amount)
+    def __init__(self, hash_class):
+        super(HashHexDigestFactory, self).__init__()
         self._hash_class = hash_class
     
     def __call__(self):
