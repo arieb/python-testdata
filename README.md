@@ -51,6 +51,8 @@ See Docstrings for more examples and doctests.
 | DateIntervalFactory | Generates datetime objects starting from `base` while adding  `delta` to it each iteration.
 | RelativeToDatetimeField | Generates datetime object relative to another datetime field, like if you have `start_time` which is a RandomDateFactory field, and want an `end_time` field that is always 15 minutes later.| 
 
+And MUCH MUCH more.. 
+
 ## Todos
 * Add usage documentation for each factory (using doctest maybe?)
 * Add more tests
