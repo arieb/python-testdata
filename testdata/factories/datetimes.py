@@ -15,7 +15,7 @@ class RandomDateFactory(Factory):
         :type element_amount: int
         
         Example:
-        >>> f = list(RandomDateFactory(datetime.datetime(2013, 10, 1, 1, 1, 0, 0), datetime.datetime(2013, 10, 1, 1, 1, 0, 1), 0, 100))
+        >>> f = list(RandomDateFactory(datetime.datetime(2013, 10, 1, 1, 1, 0, 0), datetime.datetime(2013, 10, 1, 1, 1, 0, 1), 100))
         >>> len(f)
         100
         >>> datetime.datetime(2013, 10, 1, 1, 1, 0, 0) in f
@@ -46,7 +46,7 @@ class DateIntervalFactory(Factory):
     :type delta: datetime.timedelta
 
     Example:
-    >>> list(DateIntervalFactory(datetime.datetime(2013, 10, 1), datetime.timedelta(days=1), 0, 3))
+    >>> list(DateIntervalFactory(datetime.datetime(2013, 10, 1), datetime.timedelta(days=1), 3))
     [datetime.datetime(2013, 10, 1, 0, 0), datetime.datetime(2013, 10, 2, 0, 0), datetime.datetime(2013, 10, 3, 0, 0)]
     """
     def __init__(self, base, delta, element_amount=0):
@@ -71,4 +71,3 @@ class RelativeToDatetimeField(DependentField):
         if type(other_field) != datetime.datetime:
             raise InvalidFieldType("field {} isn't of type datetime.datetime")
         return other_field + self._delta
-

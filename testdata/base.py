@@ -55,6 +55,8 @@ class DependentField(Factory):
     This is the base class of fields that their result depends on the values
     of another field.
     This should be used inside the DictFactory.
+
+    See `ClonedField` class for an example usage.
     """
     def __init__(self, depending_field_names=[], element_amount=0):
         super(DependentField, self).__init__(element_amount)
@@ -95,7 +97,7 @@ class ListFactory(Factory):
 
     Example,
     >>> import testdata
-    >>> f = ListFactory(testdata.CountingFactory(1), 0, 5, 3)
+    >>> f = ListFactory(testdata.CountingFactory(1), 5, 3)
     >>> list(f)
     [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15]]
     """
@@ -116,7 +118,7 @@ class Callable(Factory):
     :param element_amount: the amount of elements this factory will create.
 
     Example:
-    >>> list(Callable(lambda: 'foo', 0, 4))
+    >>> list(Callable(lambda: 'foo', 4))
     ['foo', 'foo', 'foo', 'foo']
     """
     def __init__(self, callable_obj, element_amount=0):
@@ -136,17 +138,16 @@ class ClonedField(DependentField):
     Example:
     >>> import testdata
     >>> class Foo(testdata.DictFactory):
-    ...     id = testdata.CountingFactory(0, 0)
-    ...     cloned_id = ClonedField("id", 1)
-    >>> [result] = [i for i in Foo(0, 1)]
+    ...     id = testdata.CountingFactory(0)
+    ...     cloned_id = ClonedField("id")
+    >>> [result] = [i for i in Foo(1)]
     >>> result['id'] == result['cloned_id']
     True
     >>> class Bar(testdata.DictFactory):
-    ...     id = testdata.CountingFactory(0, 0)
-    ...     cloned_id = ClonedField("id", 0)
-    >>> [result] = [i for i in Bar(0, 1)]
+    ...     id = testdata.CountingFactory(0)
+    ...     cloned_id = ClonedField("_id")
     Traceback (most recent call last):
-    NoSuchOlderField: Missing id field in older generation fields
+    UnmetDependentFields: The fields: set(['cloned_id']) - depend on fields that aren't defined!
     """
     def __init__(self, cloned_field_name, element_amount=0):
         super(ClonedField, self).__init__([cloned_field_name], element_amount)

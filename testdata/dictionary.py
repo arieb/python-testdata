@@ -12,11 +12,11 @@ class DictFactory(Factory):
 
     Example:
     >>> import testdata
-    >>> class Users(testdata.DictFactory):
+    >>> class Users(DictFactory):
     ...    id = testdata.CountingFactory(10)
     ...    age = testdata.RandomInteger(10, 10) 
     ...    gender = testdata.RandomSelection(['male'])
-    >>> [result] = [i for i in Users(0, 1)]
+    >>> [result] = [i for i in Users(1)]
     >>> result
     {'gender': 'male', 'age': 10, 'id': 10}
     """
