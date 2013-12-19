@@ -6,3 +6,4 @@ class InvalidFieldType(TestDataError): pass
 class MissingRequiredFields(TestDataError): pass
 class UnmetDependentFields(TestDataError): pass
 class NoFactoriesDefined(TestDataError): pass
+class NoFactoriesProvided(TestDataError): pass

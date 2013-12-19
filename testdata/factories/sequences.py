@@ -37,6 +37,8 @@ class RandomSelection(Factory):
     >>> while possible_values:
     ...     for i in RandomSelection([1, 2, 3], 100):
     ...         possible_values.discard(i)
+    >>> print possible_values
+    set([])
     """
     def __init__(self, sequence, element_amount=0):
         super(RandomSelection, self).__init__(element_amount)
