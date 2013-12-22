@@ -23,7 +23,6 @@ class FieldFromCollection(RandomSelection):
     def __init__(self, database, collection, field_name, filter_query={}, **connection_kw):
         with pymongo.MongoClient(**connection_kw) as client:
             db = client[database]
-            self._collection = db[collection]
-            self._field_name = field_name
-            possible_values = self._collection.find(filter_query).distinct(field_name)
+            collection = db[collection]
+            possible_values = collection.find(filter_query).distinct(field_name)
         super(FieldFromCollection, self).__init__(possible_values)
