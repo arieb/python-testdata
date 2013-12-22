@@ -1,5 +1,6 @@
 import os
 from setuptools import setup
+VERSION = "1.0"
 
 # Utility function to read the README file.
 # Used for the long_description.  It's nice, because now 1) we have a top level
@@ -8,11 +9,19 @@ from setuptools import setup
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+def get_version():
+    build_number = os.environ.get('BUILD_NUMBER', None)
+    if build_number:
+        return VERSION + "b{}".format(build_number)
+    return VERSION
+
 setup(
     name = "python-testdata",
-    version = "1.0",
+    version = get_version(),
     author = "Arie Bro",
+    author_email = "ariebro@gmail.com",
     description = "A small package that helps generate content to fill databases for tests.",
+    url = "http://github.com/arieb/python-testdata",
     license = "MIT",
     package_data = {
         '': ['.md']
@@ -20,11 +29,12 @@ setup(
     install_requires = [
         'fake-factory == 0.2'
     ],
-    keywords = "mongodb factory testing test unittest mongo data testdata database json",
+    keywords = "factory testing test unittest mongo data testdata database json elasticsearch",
     packages = ['testdata', 'testdata.extra', 'testdata.factories'],
     long_description=read('README.md'),
     classifiers=[
-        "Topic :: Testdata",
-        "License :: MIT License",
+        "Intended Audience :: Developers",
+        "Topic :: Software Development :: Testing",
+        "License :: OSI Approved :: MIT License",
     ],
 )

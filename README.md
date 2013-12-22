@@ -7,7 +7,7 @@ testdata provides the basic Factory and DictFactory classes that generate conten
 it also provides many more specialized factories that provide extended functionality.
 every Factory instance knows how many elements its going to generate, this enables us to generate statistical results.
 
-testdata isn't bound to a specifc database, but does include database specfic modules (like MongoDB - mongo_factories.py)
+testdata isn't bound to a specifc database, but does include database specfic modules inside, like - extra.mongodb.py)
 but it will always be clean of database related dependencies.
 
 ## Examples
