@@ -3,7 +3,7 @@ import random
 import operator
 
 from ..errors import NoFactoriesProvided
-from ..base import Factory
+from ..base import Factory, DependentField
 
 class Constant(Factory):
     """
@@ -95,3 +95,38 @@ class RandomLengthListFactory(Factory):
 
     def __call__(self):
         return [self._factory.next() for i in xrange(random.randint(self._min_items, self._max_items))]
+
+class ConditionalValueField(DependentField):
+    """
+    This factory returns a value depending on the value of a different field 'other_field'.
+    Possible values are passed as a dict, with a key being the value of 'other_field'.
+
+    Important!
+    `possible_values` should cover all possible values of `other_field`
+
+    For example,
+    >>> import testdata
+    >>> class Bar(testdata.DictFactory):
+    ...     a = testdata.CountingFactory(0)
+    ...     b = ConditionalValueField('a', {0: 'a', 1: 'b', 2: 'c'}, -1)
+    >>> for i in Bar().generate(3):
+    ...     print i
+    {'a': 0, 'b': 'a'}
+    {'a': 1, 'b': 'b'}
+    {'a': 2, 'b': 'c'}
+    >>> for i in Bar().generate(4):
+    ...     print i
+    {'a': 0, 'b': 'a'}
+    {'a': 1, 'b': 'b'}
+    {'a': 2, 'b': 'c'}
+    {'a': 3, 'b': -1}
+    """
+    def __init__(self, other_field, possible_values, default_value):
+        super(ConditionalValueField, self).__init__([other_field])
+        self._other_field = other_field
+        self._possible_values = possible_values
+        self._default_value = default_value
+
+    def __call__(self):
+        other_field_value = self.depending_fields[self._other_field] 
+        return self._possible_values.get(other_field_value, self._default_value)
