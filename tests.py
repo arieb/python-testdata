@@ -7,3 +7,4 @@ if __name__ == '__main__':
     doctest.testmod(testdata.factories.datetimes)
     doctest.testmod(testdata.factories.generic)
     doctest.testmod(testdata.factories.sequences)
+    doctest.testmod(testdata.factories.numbers)

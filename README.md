@@ -7,8 +7,18 @@ testdata provides the basic Factory and DictFactory classes that generate conten
 it also provides many more specialized factories that provide extended functionality.
 every Factory instance knows how many elements its going to generate, this enables us to generate statistical results.
 
+The DictFactory is especially useful if you want to generate data that you will later input to your NoSQL, Document based
+database
+
+In addition, using the DictFactory and the DependentField factories allows us to create factorys that depend on the results
+of other factories. (see Examples for more information).
+
 testdata isn't bound to a specifc database, but does include database specfic modules inside, like - extra.mongodb.py)
 but it will always be clean of database related dependencies.
+
+## Installation
+
+    pip install python-testdata
 
 ## Examples
 We integrate the awsome fake-factory package to generate data using FakeDataFactory.
@@ -26,15 +36,51 @@ class Users(testdata.DictFactory):
     age = testdata.RandomInteger(10, 30) 
     gender = testdata.RandomSelection(['female', 'male'])
 
-for user in Users(10): # let say we only want 10 users
+for user in Users().generate(10): # let say we only want 10 users
     print user
     # {'firstname': 'Toni', 'lastname': 'Schaden', 'gender': 'female', 'age': 18, 'address': '0641 Homenick Hills\nSouth Branson, RI 70388', 'id': 10}
     # {'firstname': 'Gene', 'lastname': 'Greenfelder', 'gender': 'male', 'age': 17, 'address': '292 Loy Lights Suite 328\nFritzfort, IN 73914', 'id': 11}
     # or more likely you'd want to insert them into your favorite database (MongoDB, ElasticSearch, ..)
 ```
 
+When creating our own subclasses for DictFactory, we can make some fields dependent on other fields.
+for example:
+
+```
+class ExampleFactory(DictFactory):
+    a = CountingFactory(10)
+    b = ClonedField("a") # b will have the same value as field 'a'
+
+for e in ExampleFactory().generate(100):
+    print e
+
+# {'a': 10, 'b': 10}
+# {'a': 11, 'b': 11}
+# ...
+```
+
+Lets say we want to generate something like events data, we want events to have 
+a start time, and an end time that will be 20 minutes in the future.
+In addition, we want the event's start_time will be 12 minutes apart.
+
+```python
+import testdata
+
+EVENT_TYPES = ["USER_DISCONNECT", "USER_CONNECTED", "USER_LOGIN", "USER_LOGOUT"]
+class EventsFactory(testdata.DictFactory):
+    start_time = testdata.DateIntervalFactory(datetime.datetime.now(), datetime.timedelta(minutes=12))
+    end_time = testdata.RelativeToDatetimeField("start_time", datetime.timedelta(minutes=20))
+    event_code = testdata.RandomSelection(EVENT_TYPES)
+
+for event in EventFactory().generate(100):
+    print event
+    # {'start_time': datetime.datetime(2013, 12, 23, 13, 37, 1, 591878), 'end_time': datetime.datetime(2013, 12, 23, 13, 57, 1, 591878), 'event_code': 'USER_CONNECTED'}
+    # {'start_time': datetime.datetime(2013, 12, 23, 13, 49, 1, 591878), 'end_time': datetime.datetime(2013, 12, 23, 14, 9, 1, 591878), 'event_code': 'USER_LOGIN'}
+    # {'start_time': datetime.datetime(2013, 12, 23, 14, 1, 1, 591878), 'end_time': datetime.datetime(2013, 12, 23, 14, 21, 1, 591878), 'event_code': 'USER_DISCONNECT'}
+```
+
 ## Factories
-See Docstrings for more examples and doctests.
+See the Factorie's Docstrings for more examples and doctests.
 
 #### Bases
 |Factory Class| Description|

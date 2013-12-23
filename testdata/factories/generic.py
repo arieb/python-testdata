@@ -1,4 +1,5 @@
 from copy import deepcopy
+import random
 import operator
 
 from ..errors import NoFactoriesProvided
@@ -66,3 +67,31 @@ class Sum(Factory):
         super(Sum, self).set_element_amount(new_element_amount)
         for factory in self._factories:
             factory.set_element_amount(new_element_amount)
+
+class RandomLengthListFactory(Factory):
+    """
+    A factory that returns on each iteration a list of of between `min` and `max` items, returned 
+    from calls to the given factory.
+
+    Example,
+    >> import testdata
+    >> f = RandomLengthListFactory(testdata.CountingFactory(1), 3, 8).generate(5)
+    >> list(f)
+    [[1, 2, 3], [4, 5, 6, 7], [8, 9, 10], [11, 12,13, 14, 15]]
+    """
+    def __init__(self, factory=None, min_items=0, max_items=1):
+        super(RandomLengthListFactory, self).__init__()
+        self._factory = factory
+        self._min_items = min_items
+        self._max_items = max_items
+
+    def __iter__(self):
+        self._factory = iter(self._factory)
+        return super(RandomLengthListFactory, self).__iter__()
+
+    def set_element_amount(self, element_amount):
+        super(RandomLengthListFactory, self).set_element_amount(element_amount)
+        self._factory.set_element_amount(element_amount * self._max_items)
+
+    def __call__(self):
+        return [self._factory.next() for i in xrange(random.randint(self._min_items, self._max_items))]
