@@ -7,3 +7,4 @@ class MissingRequiredFields(TestDataError): pass
 class UnmetDependentFields(TestDataError): pass
 class NoFactoriesDefined(TestDataError): pass
 class NoFactoriesProvided(TestDataError): pass
+class InvalidTotalPrecentage(TestDataError): pass

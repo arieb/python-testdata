@@ -21,7 +21,14 @@ but it will always be clean of database related dependencies.
     pip install python-testdata
 
 ## Examples
-We integrate the awsome fake-factory package to generate data using FakeDataFactory.
+We integrate the awsome fake-factory package to generate data using FakeDataFactory,
+this allows us to generate all sorts of content like:
+    * Names (First, last, full names)
+    * companies
+    * addresses
+    * emails
+    * urls
+    * and much much more
 
 lets create a very simple factory that generates Users:
 
@@ -46,7 +53,7 @@ for user in Users().generate(10): # let say we only want 10 users
 When creating our own subclasses for DictFactory, we can make some fields dependent on other fields.
 for example:
 
-```
+```python
 class ExampleFactory(DictFactory):
     a = CountingFactory(10)
     b = ClonedField("a") # b will have the same value as field 'a'
@@ -79,6 +86,31 @@ for event in EventFactory().generate(100):
     # {'start_time': datetime.datetime(2013, 12, 23, 14, 1, 1, 591878), 'end_time': datetime.datetime(2013, 12, 23, 14, 21, 1, 591878), 'event_code': 'USER_DISCONNECT'}
 ```
 
+We also have factories that allow us to generate different data distributed by different percentage, for example,
+lets say we want to create an 'Job', that will have an assigned user field, a state field and a description field.
+we want the state to be 'pending' in 90% of dictionaries and 'error' the rest of the time. In addition, we want that if the 'state' field is 
+'error' the assigned user will be 'support', else it should be 'admin'.
+
+```python
+class Job(testdata.DictFactory):
+    state = testdata.StatisticalValuesFactory([('pending', 90), ('error', 10)])
+    assigned_user = testdata.ConditionalValueField('state', {'error': 'support'}, 'admin')
+    description = testdata.RandomLengthStringFactory()
+
+for i in Job().generate(10):
+    print i
+    # {'state': 'error', 'assigned_user': 'support', 'description': 'jUlyFByPxPdFlBPBfPaGaTPPuajFSHXKkyewzrQ'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'tOzkgmBBnxQZhSYEjVduyXGdLrtqeTZqRxmHNXbaJBfpdNxuLKWyTDxkCZgiZTLHeiKEswvIyDzAnuuOLtXmVWhjvazaOYuu'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'TIDVuvZRUBLLTtG'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'RgcSaFzmMrhwCAZjLofikmXJhtqkVOTsWHnqTXjgrxgzTKH'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'tLkSEkCbYDvlcDBDWUBGMmidEdOxeiLDBADDKnqGqWLnxUBqzOXFXnBxkiGTymuGNbUnmxyawzLGsiummCiwxNSw'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'tUyYLofuZpceaWYKkiRvksQLqFHGOiwACuPIvRxMIuftJPsObSqCBcrQnOkOhqAukfMwrY'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'JbFrUxrERMObfwhEtCQGcxEbimvoTFwJriSfRFLFkBpyemqEfqUCGKmVlgSlVoZrrnetEnLCgbfobFbTMQOZ'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'lqatAwdcQuMMOPiYdVMRyyQgEIzOlcoozijjdCfXsVoZnnTtQjPSGBFZQGSkPblJrTIYLAotiZoyYRFrlncevwuNcqfOmeXeCPD'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'VYxnhydWtIUFiOEPszVQHuxYBIUGDyAefZiPIgkWHCMmophiueXbixXtdwKQkuvWImuErMOOOcwevQHGApXkolhjAq'}
+    # {'state': 'pending', 'assigned_user': 'admin', 'description': 'RcawgTkQggchdHppSyQxnbDdNxqkGqbQWnQMSlorqnAQLdAqyWnKtGpXaZuVdxcGQBImzVPQsYAbIFUIpqvDzwTDdRpleBrc'}
+```
+
 ## Factories
 See the Factorie's Docstrings for more examples and doctests.
 
@@ -103,4 +135,5 @@ And MUCH MUCH more..
 * Add usage documentation for each factory (using doctest maybe?)
 * Add more tests
 * Add GeoLocationFactories to generates Location and distance related data (for example, random points near a central point).
-* Add Statistical Factories
+* Add MORE Statistical Factories
+* more ideas welcome!

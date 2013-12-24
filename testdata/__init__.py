@@ -7,3 +7,4 @@ from .factories.datetimes import *
 from .factories.fake import *
 from .factories.numbers import *
 from .factories.generic import  *
+from .factories.statistical import *
