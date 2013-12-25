@@ -4,8 +4,6 @@ if __name__ == '__main__':
     import testdata
     doctest.testmod(testdata.base)
     doctest.testmod(testdata.dictionary)
-    print testdata.factories
-    print testdata.factories.statistical
     doctest.testmod(testdata.factories.statistical)
     doctest.testmod(testdata.factories.datetimes)
     doctest.testmod(testdata.factories.generic)

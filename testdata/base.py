@@ -142,6 +142,38 @@ class Callable(Factory):
     def __call__(self):
         return self._callable_obj()
 
+class DependentCallable(DependentField):
+    """
+    Allows us to call a callable object (like a function), and pass it
+    other fields as parameters.
+
+    :param callable_obj: the object to __call__() on each iteration
+    :param fields: a list of fields that their values should be passed as parameters on each call.
+
+    Example,
+    >>> import testdata
+    >>> def sum_fields(x, y):
+    ...     return x + y
+    >>> class A(testdata.DictFactory):
+    ...     x = testdata.CountingFactory(100)
+    ...     y = testdata.CountingFactory(1)
+    ...     sum = DependentCallable(sum_fields, ['x', 'y'])
+    >>> for i in A().generate(4):
+    ...     print i['x'], i['y'], i['sum']
+    100 1 101
+    101 2 103
+    102 3 105
+    103 4 107
+    """
+    def __init__(self, callable_obj, fields=[]):
+        super(DependentCallable, self).__init__(fields)
+        self._callable_obj = callable_obj
+        self._fields = fields
+
+    def __call__(self):
+        super(DependentCallable, self).__call__()
+        return self._callable_obj(**self.depending_fields)
+
 class ClonedField(DependentField):
     """
     A factory that copies the value of another factory.
