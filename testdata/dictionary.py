@@ -1,4 +1,4 @@
-from copy import deepcopy 
+from copy import deepcopy, copy
 from .base import Factory
 from .metaclasses import DictFactoryBuilder
 
@@ -22,9 +22,10 @@ class DictFactory(Factory):
     """
     __metaclass__ = DictFactoryBuilder
 
-    def __init__(self):
+    def __init__(self, **factories):
         super(DictFactory, self).__init__()
         self._child_factories = deepcopy(self._child_factory_tree)
+        self._child_factories.update(factories)
         self._oldest_generation = max(self._child_factories.keys())
 
     def __iter__(self):
@@ -32,7 +33,7 @@ class DictFactory(Factory):
         return self
 
     def _iter_child_factories(self):
-        child_factories = self._child_factories.copy()
+        child_factories = copy(self._child_factories)
         for generation in child_factories.keys():
             for key in child_factories[generation].keys(): 
                 self._child_factories[generation][key] = iter(child_factories[generation][key])

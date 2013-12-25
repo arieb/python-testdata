@@ -87,9 +87,9 @@ for event in EventFactory().generate(100):
 ```
 
 We also have factories that allow us to generate different data distributed by different percentage, for example,
-lets say we want to create an 'Job', that will have an assigned user field, a state field and a description field.
-we want the state to be 'pending' in 90% of dictionaries and 'error' the rest of the time. In addition, we want that if the 'state' field is 
-'error' the assigned user will be 'support', else it should be 'admin'.
+lets say we want to create a 'Job', that will have an assigned user field, a state field and a description field.
+We want the state to be 'pending' in 90% of dictionaries and 'error' in the rest of them. In addition, we want that if the 'state' field is 
+'error' the assigned user will be 'support', or else it should be 'admin'.
 
 ```python
 class Job(testdata.DictFactory):
@@ -111,6 +111,30 @@ for i in Job().generate(10):
     # {'state': 'pending', 'assigned_user': 'admin', 'description': 'RcawgTkQggchdHppSyQxnbDdNxqkGqbQWnQMSlorqnAQLdAqyWnKtGpXaZuVdxcGQBImzVPQsYAbIFUIpqvDzwTDdRpleBrc'}
 ```
 
+In version 1.0.5 we extended the DictFactory to support passing additional factories, or overriding existing factories, for a specific instance.
+Lets take for example our 'User' example from the begining.
+
+```python
+import testdata
+class Users(testdata.DictFactory):
+    id = testdata.CountingFactory(10)
+    firstname = testdata.FakeDataFactory('firstName')
+    lastname = testdata.FakeDataFactory('lastName')
+    address = testdata.FakeDataFactory('address')
+    age = testdata.RandomInteger(10, 30) 
+    gender = testdata.RandomSelection(['female', 'male'])
+```
+But lets override it so the 'firstname' always returns John, and make the age be a random integer between 40 and 60 and add an 'email' field.
+
+```python
+for user in Users(firstname=testdata.Constant('John'), age=testdata.RandomInteger(40, 60), email=testdata.FakeDataFactory('email')).generate(10): # let say we only want 10 users
+    print user
+    #{'firstname': 'John', 'gender': 'male', 'age': 54, 'email': 'hazle.wehner@brekke.com', 'lastname': 'Willms', 'address': '245 Pfeffer Light Apt. 309\nEast Audieside, IN 11931', 'id': 10}
+    #{'firstname': 'John', 'gender': 'male', 'age': 47, 'email': 'mariam25@gmail.com', 'lastname': 'Ratke', 'address': '98710 Freddy Gateway\nDelilahborough, GU 50849', 'id': 11}
+    #{'firstname': 'John', 'gender': 'male', 'age': 55, 'email': 'tyler22@yahoo.com', 'lastname': 'Cormier', 'address': '432 Block Locks Apt. 547\nNew Estel, NJ 54026', 'id': 12}
+    # or more likely you'd want to insert them into your favorite database (MongoDB, ElasticSearch, ..)
+```
+
 ## Factories
 See the Factorie's Docstrings for more examples and doctests.
 
@@ -121,6 +145,7 @@ See the Factorie's Docstrings for more examples and doctests.
 | DictFactory | A very powerful base class. allows sub classing to create factories that generate dicts with a specific schema (see [Examples][#Examples]). |
 | ListFactory | A factory that returns on each iteration a list of `elements_per_list` items returned from calls to the given factory. |
 | Callable | Gets a callable object as an argument and returns the result of calling the object on every iteration |
+| DependentCallable | Gets a callable object as an argument and returns the result of calling the object passing the defined fields as arguments on every iteration |
 | ClonedField | A factory that copies the value of another factory. |
 #### Dates
 |Factory Class| Description|
