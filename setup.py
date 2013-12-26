@@ -24,7 +24,7 @@ setup(
     url = "http://github.com/arieb/python-testdata",
     license = "MIT",
     install_requires = [
-        'fake-factory == 0.2'
+        'fake-factory == 0.3.2'
     ],
     keywords = "factory testing test unittest mongo data testdata database json elasticsearch",
     packages = find_packages(),
