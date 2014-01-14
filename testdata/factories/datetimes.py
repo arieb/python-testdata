@@ -70,3 +70,19 @@ class RelativeToDatetimeField(DependentField):
         if type(other_field) != datetime.datetime:
             raise InvalidFieldType("field {} isn't of type datetime.datetime")
         return other_field + self._delta
+
+class AlignedRelativeDatetimeField(DependentField):
+    """
+    Returns another datetime field, only aligned to specific time quantums.
+    """
+    def __init__(self, other_dateime_field, minute_alignment):
+        if minute_alignment <= 0 or minute_alignment > 60:
+            raise ValueError("minute_alignment needs to be a positive integer between 1 - 60")
+        super(AlignedRelativeDatetimeField, self).__init__([other_dateime_field])
+        self._other_datetime_field = other_dateime_field
+        self._minute_alignment = minute_alignment
+
+    def __call__(self):
+        super(AlignedRelativeDatetimeField, self).__call__()
+        other_value = self.depending_fields[self._other_datetime_field]
+        return other_value - datetime.timedelta(minutes=other_value.minute % self._minute_alignment)
